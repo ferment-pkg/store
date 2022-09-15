@@ -16,7 +16,7 @@ tauri-build = { version = "1.0.0", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.0.0", features = ["api-all"] }
+tauri = { version = "1.0.0", features = [] }
 
 [features]
 # by default Tauri runs in production mode
@@ -25,3 +25,24 @@ default = [ "custom-protocol" ]
 # this feature is used used for production builds where `devPath` points to the filesystem
 # DO NOT remove this
 custom-protocol = [ "tauri/custom-protocol" ]
+
+[profile.release]
+panic = "abort" # Strip expensive panic clean-up logic
+lto = true # Enables link to optimizations
+opt-level = "s" # Optimize for binary size
+
+[profile.dev]
+incremental = true
+strip = false
+lto = false
+opt-level = 0
+
+[profile.dev.package."*"]
+opt-level = 0
+incremental = true
+codegen-units = 4
+
+[profile.dev.build-override]
+opt-level = 0
+incremental = true
+codegen-units = 4
