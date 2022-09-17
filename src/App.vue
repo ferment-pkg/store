@@ -1,52 +1,107 @@
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import Greet from "./components/Greet.vue";
+import { ref } from 'vue';
+import Search from './pages/search_result.vue';
+const page = ref<string>("discover")
+const isSearch = ref<boolean>(false)
+const barrells = ref<Barrell[]>([])
+const search = ref<string>("")
+
+async function getBarrells() {
+  barrells.value = await (await fetch("https://api.fermentpkg.tech/barrells")).json()
+}
+function setPage(pageName: string) {
+  page.value = pageName
+  isSearch.value = false
+  console.log(page)
+}
+
+getBarrells()
+const filteredBarrells = ref<Barrell[]>(barrells.value)
+function searchForPackage() {
+  isSearch.value = true
+  page.value = ""
+  filteredBarrells.value = barrells.value.filter(barrell => barrell.name.toLowerCase().includes(search.value.toLowerCase()))
+}
+
 </script>
 
 <template>
   <div class="container">
-    <h1>Welcome to Tauri!</h1>
+    <nav>
+      <a :class="page=='discover'?'selected':null" @click="setPage('discover')">Discover</a>
+      <a :class="page=='popular'?'selected':null" @click="setPage('popular')">Popular</a>
+      <div class="search">
+        <input type="text" v-model="search" placeholder="Search for a package">
+        <button @click="searchForPackage()">Search</button>
+      </div>
+    </nav>
+    <div class="content">
+      <Suspense v-if="!isSearch">
+        <component :is="page"></component>
 
-    <div class="row">
-      <a href="https://vitejs.dev" target="_blank">
-        <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-      </a>
-      <a href="https://tauri.app" target="_blank">
-        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-      </a>
-      <a href="https://vuejs.org/" target="_blank">
-        <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-      </a>
+      </Suspense>
+      <Suspense v-if="isSearch">
+        <Search :barrells="filteredBarrells" />
+      </Suspense>
+
     </div>
-
-    <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
-
-    <p>
-      Recommended IDE setup:
-      <a href="https://code.visualstudio.com/" target="_blank">VS Code</a>
-      +
-      <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
-      +
-      <a href="https://github.com/tauri-apps/tauri-vscode" target="_blank"
-        >Tauri</a
-      >
-      +
-      <a href="https://github.com/rust-lang/rust-analyzer" target="_blank"
-        >rust-analyzer</a
-      >
-    </p>
-
-    <Greet />
   </div>
 </template>
 
-<style scoped>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
+<style scoped lang="scss">
+$color: rgb(25, 26, 27);
+
+.content {
+  width: 80%;
+  margin-left: 20%;
+  background-color: $color;
+  //get height of window
+  height: 100vh;
+  overflow-y: scroll;
+
+
 }
 
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #249b73);
+.container {
+  width: 100%;
+  height: 0%;
+  padding: 0;
+}
+
+nav {
+  //set color variable
+  margin: auto;
+
+  //put navbar on left side
+  background: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20%;
+  height: 100%;
+  padding: 20px 0;
+  transition: all 0.5s ease;
+  //make navbar have rounded corners
+  border-radius: 0 20px 20px 0;
+  margin-right: 0%;
+  overflow: hidden;
+
+  * {
+    margin-bottom: 10px;
+  }
+
+  a {
+    display: block;
+    color: #f2f2f2;
+    padding: 16px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  a.selected {
+    background: #f2f2f2;
+    color: $color;
+  }
+
 }
 </style>

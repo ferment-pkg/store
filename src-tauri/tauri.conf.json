@@ -7,12 +7,19 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "store",
+    "productName": "Ferment - Store",
     "version": "0.0.0"
   },
   "tauri": {
+    "macOSPrivateApi": true,
     "allowlist": {
-      "all": false
+      "all": false,
+      "window":{
+        "all": true
+      },
+      "shell": {
+        "open": true
+      }
     },
     "bundle": {
       "active": true,
@@ -41,11 +48,14 @@
       "resources": [],
       "shortDescription": "",
       "targets": "all",
+
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
         "timestampUrl": ""
+
       }
+
     },
     "security": {
       "csp": null
@@ -56,10 +66,13 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 800,
         "resizable": true,
-        "title": "store",
-        "width": 800
+        "title": "Ferment - Store",
+        "width": 1000,
+        "transparent":true,
+        "minWidth": 1000,
+        "minHeight": 800
       }
     ]
   }

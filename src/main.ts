@@ -1,5 +1,6 @@
-import { createApp } from "vue";
-import "./style.css";
+import { createApp, defineAsyncComponent } from "vue";
 import App from "./App.vue";
-
-createApp(App).mount("#app");
+import "./style.css";
+createApp(App)
+.component("discover", defineAsyncComponent(() => import("./pages/discover.vue")))
+.mount("#app");
