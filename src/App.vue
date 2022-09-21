@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { emit } from '@tauri-apps/api/event';
 import { ref } from 'vue';
 import Search from './pages/search_result.vue';
 const page = ref<string>("discover")
@@ -10,17 +11,20 @@ async function getBarrells() {
   barrells.value = await (await fetch("https://api.fermentpkg.tech/barrells")).json()
 }
 function setPage(pageName: string) {
+  emit("pageChange", { oldPage: page.value })
   page.value = pageName
   isSearch.value = false
-  console.log(page)
+
 }
 
 getBarrells()
 const filteredBarrells = ref<Barrell[]>(barrells.value)
 function searchForPackage() {
+
   isSearch.value = true
   page.value = ""
   filteredBarrells.value = barrells.value.filter(barrell => barrell.name.toLowerCase().includes(search.value.toLowerCase()))
+  emit("pageChange", { oldPage: page.value })
 }
 
 </script>
@@ -30,6 +34,7 @@ function searchForPackage() {
     <nav>
       <a :class="page=='discover'?'selected':null" @click="setPage('discover')">Discover</a>
       <a :class="page=='popular'?'selected':null" @click="setPage('popular')">Popular</a>
+      <a :class="page=='install'?'selected':null" @click="setPage('install')">Installs</a>
       <div class="search">
         <input type="text" v-model="search" placeholder="Search for a package">
         <button @click="searchForPackage()">Search</button>
