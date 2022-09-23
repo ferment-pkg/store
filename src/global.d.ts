@@ -6,3 +6,8 @@ type Barrell = {
     dependencies?: string[];
     home?: string;
 };
+type Settings={
+    packageManagerPath: string;
+    apiPath: string;
+    installOptions: string[];
+}

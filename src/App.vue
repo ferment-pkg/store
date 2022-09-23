@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { emit } from '@tauri-apps/api/event';
+import { emit, listen } from '@tauri-apps/api/event';
 import { ref } from 'vue';
 import Search from './pages/search_result.vue';
 const page = ref<string>("discover")
@@ -8,7 +8,7 @@ const barrells = ref<Barrell[]>([])
 const search = ref<string>("")
 
 async function getBarrells() {
-  barrells.value = await (await fetch("https://api.fermentpkg.tech/barrells")).json()
+  barrells.value = await (await fetch("https://api.fermentpkg.tech/barrells", { cache: "default" })).json()
 }
 function setPage(pageName: string) {
   emit("pageChange", { oldPage: page.value })
@@ -26,7 +26,10 @@ function searchForPackage() {
   filteredBarrells.value = barrells.value.filter(barrell => barrell.name.toLowerCase().includes(search.value.toLowerCase()))
   emit("pageChange", { oldPage: page.value })
 }
-
+listen<string>("changePage", (page) => {
+  setPage(page.payload)
+  isSearch.value = false
+})
 </script>
 
 <template>
@@ -35,78 +38,48 @@ function searchForPackage() {
       <a :class="page=='discover'?'selected':null" @click="setPage('discover')">Discover</a>
       <a :class="page=='popular'?'selected':null" @click="setPage('popular')">Popular</a>
       <a :class="page=='install'?'selected':null" @click="setPage('install')">Installs</a>
+      <a :class="page=='settings'?'selected':null" @click="setPage('settings')">Settings</a>
       <div class="search">
         <input type="text" v-model="search" placeholder="Search for a package">
         <button @click="searchForPackage()">Search</button>
       </div>
     </nav>
     <div class="content">
-      <Suspense v-if="!isSearch">
-        <component :is="page"></component>
+      <Transition name="slide-fade">
+        <Suspense v-if="!isSearch">
+          <component :is="page"></component>
 
-      </Suspense>
-      <Suspense v-if="isSearch">
-        <Search :barrells="filteredBarrells" />
-      </Suspense>
+        </Suspense>
+      </Transition>
+      <Transition name="slide-fade">
+        <Suspense v-if="isSearch">
+          <Search :barrells="filteredBarrells" />
+        </Suspense>
+      </Transition>
 
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-$color: rgb(25, 26, 27);
+@import "./styles/main.scss";
 
-.content {
-  width: 80%;
-  margin-left: 20%;
-  background-color: $color;
-  //get height of window
-  height: 100vh;
-  overflow-y: scroll;
-
-
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+  transition-delay: 0.9s;
 }
 
-.container {
-  width: 100%;
-  height: 0%;
-  padding: 0;
+.slide-fade-leave-active {
+  transition: all 0.7s cubic-bezier(1, 0.2, 0.8, 1);
 }
 
-nav {
-  //set color variable
-  margin: auto;
+.slide-fade-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
 
-  //put navbar on left side
-  background: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 20%;
-  height: 100%;
-  padding: 20px 0;
-  transition: all 0.5s ease;
-  //make navbar have rounded corners
-  border-radius: 0 20px 20px 0;
-  margin-right: 0%;
-  overflow: hidden;
-
-  * {
-    margin-bottom: 10px;
-  }
-
-  a {
-    display: block;
-    color: #f2f2f2;
-    padding: 16px;
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  a.selected {
-    background: #f2f2f2;
-    color: $color;
-  }
-
+.slide-fade-leave-to {
+  transform: translateX(500px);
+  opacity: 0;
 }
 </style>

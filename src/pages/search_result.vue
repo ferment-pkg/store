@@ -8,9 +8,13 @@ async function listenToBarrellPage() {
     const unlisten = await listen<string>("displayBarrellPage", ({ payload: barrell }) => {
         showBarrellPage.value.barrell = JSON.parse(barrell)
         showBarrellPage.value.status = true
-        console.log(typeof (showBarrellPage.value.barrell))
         // unlisten()
     })
+    listen("pageChange", (event) => {
+        console.log(event)
+        showBarrellPage.value.status = false
+    })
+
 
 }
 
