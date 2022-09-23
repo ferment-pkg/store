@@ -11,9 +11,13 @@ async function getBarrells() {
   barrells.value = await (await fetch("https://api.fermentpkg.tech/barrells", { cache: "default" })).json()
 }
 function setPage(pageName: string) {
+  if (page.value == "") {
+    //window.location.reload()
+  }
   emit("pageChange", { oldPage: page.value })
-  page.value = pageName
   isSearch.value = false
+  page.value = pageName
+
 
 }
 
@@ -27,8 +31,9 @@ function searchForPackage() {
   emit("pageChange", { oldPage: page.value })
 }
 listen<string>("changePage", (page) => {
-  setPage(page.payload)
   isSearch.value = false
+  setPage(page.payload)
+
 })
 </script>
 
@@ -46,17 +51,11 @@ listen<string>("changePage", (page) => {
     </nav>
     <div class="content">
       <Transition name="slide-fade">
-        <Suspense v-if="!isSearch">
-          <component :is="page"></component>
-
+        <Suspense>
+          <component :is="page" v-if="!isSearch"></component>
+          <Search v-else :barrells="filteredBarrells" />
         </Suspense>
       </Transition>
-      <Transition name="slide-fade">
-        <Suspense v-if="isSearch">
-          <Search :barrells="filteredBarrells" />
-        </Suspense>
-      </Transition>
-
     </div>
   </div>
 </template>
@@ -66,11 +65,11 @@ listen<string>("changePage", (page) => {
 
 .slide-fade-enter-active {
   transition: all 0.3s ease-out;
-  transition-delay: 0.9s;
+  transition-delay: 0.6s;
 }
 
 .slide-fade-leave-active {
-  transition: all 0.7s cubic-bezier(1, 0.2, 0.8, 1);
+  transition: all 0.5s cubic-bezier(1, 0.2, 0.8, 1);
 }
 
 .slide-fade-enter-from {

@@ -4,21 +4,21 @@ import { ref } from 'vue';
 import Package from '../components/package.vue';
 const props = defineProps<{ barrells: Barrell[] }>()
 const showBarrellPage = ref<{ status: boolean, barrell?: Barrell }>({ status: false })
-async function listenToBarrellPage() {
-    const unlisten = await listen<string>("displayBarrellPage", ({ payload: barrell }) => {
+function listenToBarrellPage() {
+    listen<string>("displayBarrellPage", ({ payload: barrell }) => {
         showBarrellPage.value.barrell = JSON.parse(barrell)
         showBarrellPage.value.status = true
         // unlisten()
     })
-    listen("pageChange", (event) => {
-        console.log(event)
-        showBarrellPage.value.status = false
-    })
 
 
 }
-
-listenToBarrellPage()
+try {
+    listenToBarrellPage()
+}
+catch (e) {
+    console.error(e)
+}
 </script>
 
 <template>
