@@ -1,14 +1,29 @@
 <script setup lang="ts">
+import { SettingsManager } from 'tauri-settings';
 import { ref } from 'vue';
 const settings = ref<Settings>({
     packageManagerPath: "/usr/local/ferment/ferment",
     apiPath: "https://api.fermentpkg.tech/",
     installOptions: [],
 });
-settings.value = localStorage.getItem("settings") ? JSON.parse(localStorage.getItem("settings") as string) : settings.value;
-function saveSettings() {
-    localStorage.setItem("settings", JSON.stringify(settings.value));
+const manager = new SettingsManager<Settings>({
+    ...settings.value
+}, {
+    fileName: "settings",
+})
+await manager.initialize();
+for (const key in settings.value) {
+    // @ts-ignore
+    settings.value[key] = manager.getCache(key as keyof Settings) || await manager.get(key as keyof Settings);
 }
+async function saveSettings() {
+    for (const key in settings.value) {
+        // @ts-ignore
+        manager.setCache(key, settings.value[key]);
+    }
+    await manager.syncCache()
+}
+
 function resetSettings() {
     settings.value = {
         packageManagerPath: "/usr/local/ferment/ferment",

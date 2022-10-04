@@ -1,22 +1,39 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-const { barrell } = defineProps<{ barrell: Barrell }>()
-let p = ref(0);
-setInterval(() => {
-    p.value = p.value + Math.floor(Math.random() * 10);
-    if (p.value > 100) {
-        p.value = 0;
-    }
-}, 1000);
+
+const { barrell, progress } = defineProps<{
+    barrell: Barrell, progress: "downloading" | "extracting" | "installingDependencies" | "installing" | "testing" | "done"
+}>()
+const progressDict = {
+    "unknown": 0,
+    "downloading": 10,
+    "extracting": 20,
+    "installingDependencies": 35,
+    "installing": 50,
+    "testing": 80,
+    "done": 100
+}
+const readingDict = {
+    "unknown": "Unknown",
+    "downloading": "Downloading",
+    "extracting": "Extracting",
+    "installingDependencies": `Installing Dependencies`,
+    "installing": "Installing",
+    "testing": "Testing",
+    "done": "Done"
+}
 </script>
 <template>
     <div class="container">
         <p>{{barrell.name}}</p>
         <div class="progress">
-            <div class="progress-bar" :style="{width: p + '%'}"></div>
+            <div class="progress-bar" :style="{width:  progressDict[progress || 'unknown']+ '%' }"></div>
 
         </div>
-        <button @click="p=0">Cancel</button>
+        <span>{{progressDict[progress || "unknown"]}}%</span>
+        <strong>
+            STATUS: {{readingDict[progress || "unknown"]}}
+        </strong>
+        <button @click="">Cancel</button>
 
 
     </div>

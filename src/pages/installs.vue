@@ -10,7 +10,8 @@ const highestDownloaded: Barrell[] = barrells.sort((a, b) => b.downloads - a.dow
     <div class="local-container">
         <h1>Installs</h1>
         <div class="local-packages">
-            <Install_package v-for="barrell in highestDownloaded" :barrell="barrell" :key="barrell.name" />
+            <Install_package v-for="barrell in highestDownloaded" :barrell="barrell" :key="barrell.name"
+                progress="testing" />
         </div>
     </div>
 </template>

@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "Ferment - Store",
-    "version": "0.0.0"
+    "version": "0.0.1"
   },
   "tauri": {
     "macOSPrivateApi": true,
@@ -19,6 +19,18 @@
       },
       "shell": {
         "open": true
+      },
+      "fs":{
+      "createDir": true,
+      "readDir": true,
+      "readFile": true,
+      "writeFile": true,
+      "scope": [
+        "$LOCALDATA/*"
+      ]
+      },
+      "path": {
+        "all": true
       }
     },
     "bundle": {

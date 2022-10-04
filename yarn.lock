@@ -1658,6 +1658,7 @@ __metadata:
     "@types/node": ^18.7.18
     "@vitejs/plugin-vue": ^3.1.0
     sass: ^1.54.9
+    tauri-settings: ^0.1.2
     typescript: 4.4.4
     vite: ^3.1.2
     vue: ^3.2.39
@@ -1712,6 +1713,13 @@ __metadata:
     mkdirp: ^1.0.3
     yallist: ^4.0.0
   checksum: a04c07bb9e2d8f46776517d4618f2406fb977a74d914ad98b264fc3db0fe8224da5bec11e5f8902c5b9bcb8ace22d95fbe3c7b36b8593b7dfc8391a25898f32f
+  languageName: node
+  linkType: hard
+
+"tauri-settings@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "tauri-settings@npm:0.1.2"
+  checksum: 10f12913ec8ec9e641b00fed98a0ad68a36ff19193c018e8895dbd0d3d4d3433421a699de5bd80652b55562180aefc4a4422fd044d8a677eda1dba6350925009
   languageName: node
   linkType: hard
 
