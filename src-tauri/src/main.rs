@@ -3,13 +3,18 @@
     windows_subsystem = "windows"
 )]
 pub mod manager;
+use std::sync::Mutex;
 
-use tauri::Manager;
+use manager::Manager as PackageManager;
+
+use tauri::{Manager, State};
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-async fn install_package(package: String) -> String {
-    "Hello World".to_string()
+fn install_package(manager: State<'_, Mutex<PackageManager>>, package: String) -> String {
+    let mut manager = manager.lock().unwrap();
+    manager.install_package(package);
+    "Installed".to_string()
 }
 fn main() {
     tauri::Builder::default()
@@ -19,7 +24,8 @@ fn main() {
                 .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![])
+        .manage(PackageManager::new())
+        .invoke_handler(tauri::generate_handler![install_package])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
